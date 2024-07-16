@@ -5,11 +5,31 @@ import { useState } from "react";
 export default function AddCategory() {
     const [showModal, setShowModal] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const categoryName = e.target.categoryName.value;
-        console.log({ categoryName });
-        setShowModal(false);
+        const name = e.target.categoryName.value;
+        const hrefText = name.toLowerCase()
+        const href = "/" + hrefText
+
+
+        try {
+            const response = await fetch('https://animal-app-server.vercel.app/categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, href }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok' + response.statusText);
+            }
+
+            const data = await response.json();
+            setShowModal(false);
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     return (
@@ -48,7 +68,7 @@ export default function AddCategory() {
                                     type="submit"
                                     className="bg-black hover:bg-gray-800 text-white w-full py-2 px-4 mt-7 rounded-lg focus:outline-none focus:shadow-outline"
                                 >
-                                   Save
+                                    Save
                                 </button>
                             </div>
                         </form>

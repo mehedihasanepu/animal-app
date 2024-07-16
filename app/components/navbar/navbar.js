@@ -3,14 +3,20 @@ import Link from "next/link";
 import AddAnimal from "../addAnimal";
 import AddCategory from "../addCategory";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
-    const navLinks = [
-        { name: "Land Animal", href: "/land-animal" },
-        { name: "Bird", href: "/bird" },
-        { name: "Fish", href: "/fish" },
-        { name: "Insect", href: "/insect" },
-    ]
+    const [navLinks, setNavLinks] = useState([]);
+
+    useEffect(() => {
+        async function fetchData() {
+            const response = await fetch('https://animal-app-server.vercel.app/categories', { cache: "no-store" });
+            const data = await response.json();
+            setNavLinks(data);
+        }
+        fetchData();
+    }, []);
+
     const pathName = usePathname();
 
     return (
@@ -20,8 +26,10 @@ export default function Navbar() {
                     {
                         navLinks.map((link) => {
                             const isActive = pathName.startsWith(link.href);
+
+
                             return (
-                                <li key={link.name}><Link className= {isActive?" py-3 px-7 text-[#058F34] border border-[#058F34] rounded-full": "py-3 px-7 text-[#EF0D0D] border border-[#EF0D0D] rounded-full"} href={link.href}> {link.name}</Link></li>
+                                <li key={link._id}><Link className={isActive ? " py-3 px-7 text-[#058F34] border border-[#058F34] rounded-full" : "py-3 px-7 text-[#EF0D0D] border border-[#EF0D0D] rounded-full"} href={link.href}> {link.name}</Link></li>
 
                             )
                         })
